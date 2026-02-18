@@ -15,34 +15,46 @@ export default async function CampaignsPage({ searchParams }: { searchParams: { 
   const status = searchParams.status ?? "ALL";
   const sort = searchParams.sort ?? "desc";
 
-  const campaigns = await prisma.campaign.findMany({
-    where: {
-      userId: user.id,
-      ...(q ? { OR: [{ name: { contains: q } }, { niche: { contains: q } }] } : {}),
-      ...(status !== "ALL" ? { status } : {}),
-    },
-    orderBy: { createdAt: sort },
-  });
+  try {
+    const campaigns = await prisma.campaign.findMany({
+      where: {
+        userId: user.id,
+        ...(q ? { OR: [{ name: { contains: q } }, { niche: { contains: q } }] } : {}),
+        ...(status !== "ALL" ? { status } : {}),
+      },
+      orderBy: { createdAt: sort },
+    });
 
-  return (
-    <main className="mx-auto max-w-6xl space-y-4 p-6">
-      <div className="flex items-center justify-between">
+    return (
+      <main className="mx-auto max-w-6xl space-y-4 p-6">
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold">Campaigns</h1>
+          <Button asChild><Link href="/dashboard/campaigns/new">New Campaign</Link></Button>
+        </div>
+        <form className="grid gap-2 rounded-lg border bg-white p-4 md:grid-cols-4">
+          <Input name="q" placeholder="Search campaign or niche" defaultValue={q} />
+          <select name="status" className="h-10 rounded-md border px-2 text-sm" defaultValue={status}>
+            <option value="ALL">All statuses</option>
+            {Object.values(CampaignStatus).map((s) => <option key={s} value={s}>{s}</option>)}
+          </select>
+          <select name="sort" className="h-10 rounded-md border px-2 text-sm" defaultValue={sort}>
+            <option value="desc">Newest first</option>
+            <option value="asc">Oldest first</option>
+          </select>
+          <Button type="submit">Apply</Button>
+        </form>
+        <CampaignTable campaigns={campaigns.map(normalizeCampaign)} />
+      </main>
+    );
+  } catch {
+    return (
+      <main className="mx-auto max-w-3xl space-y-3 p-6">
         <h1 className="text-2xl font-bold">Campaigns</h1>
-        <Button asChild><Link href="/dashboard/campaigns/new">New Campaign</Link></Button>
-      </div>
-      <form className="grid gap-2 rounded-lg border bg-white p-4 md:grid-cols-4">
-        <Input name="q" placeholder="Search campaign or niche" defaultValue={q} />
-        <select name="status" className="h-10 rounded-md border px-2 text-sm" defaultValue={status}>
-          <option value="ALL">All statuses</option>
-          {Object.values(CampaignStatus).map((s) => <option key={s} value={s}>{s}</option>)}
-        </select>
-        <select name="sort" className="h-10 rounded-md border px-2 text-sm" defaultValue={sort}>
-          <option value="desc">Newest first</option>
-          <option value="asc">Oldest first</option>
-        </select>
-        <Button type="submit">Apply</Button>
-      </form>
-      <CampaignTable campaigns={campaigns.map(normalizeCampaign)} />
-    </main>
-  );
+        <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+          <p className="font-medium">Unable to load campaigns right now.</p>
+          <p className="mt-1">Please verify DATABASE_URL, database host access, and that the User and Campaign tables exist.</p>
+        </div>
+      </main>
+    );
+  }
 }
