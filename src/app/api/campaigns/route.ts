@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { campaignFormSchema } from "@/types/campaign";
 import { getAuthUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { normalizeCampaign } from "@/lib/campaign";
 
 export async function POST(request: Request) {
   const user = await getAuthUser();
@@ -28,5 +29,5 @@ export async function GET(request: Request) {
     where: { userId: user.id, ...(status ? { status: status as never } : {}) },
     orderBy: { createdAt: "desc" },
   });
-  return NextResponse.json(campaigns);
+  return NextResponse.json(campaigns.map(normalizeCampaign));
 }

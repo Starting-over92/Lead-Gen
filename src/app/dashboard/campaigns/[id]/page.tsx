@@ -4,13 +4,15 @@ import { CampaignDetailActions } from "@/components/campaign/campaign-detail-act
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getAuthUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { normalizeCampaign } from "@/lib/campaign";
 
 export default async function CampaignDetailPage({ params }: { params: { id: string } }) {
   const user = await getAuthUser();
   if (!user) return <main className="p-6">Please log in.</main>;
 
-  const campaign = await prisma.campaign.findFirst({ where: { id: params.id, userId: user.id } });
-  if (!campaign) notFound();
+  const campaignRecord = await prisma.campaign.findFirst({ where: { id: params.id, userId: user.id } });
+  if (!campaignRecord) notFound();
+  const campaign = normalizeCampaign(campaignRecord);
 
   return (
     <main className="mx-auto max-w-4xl space-y-4 p-6">

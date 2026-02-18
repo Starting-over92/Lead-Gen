@@ -5,6 +5,7 @@ import { getAuthUser } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { CampaignTable } from "@/components/campaign/campaign-table";
+import { normalizeCampaign } from "@/lib/campaign";
 
 export default async function CampaignsPage({ searchParams }: { searchParams: { q?: string; status?: CampaignStatus | "ALL"; sort?: "asc" | "desc" } }) {
   const user = await getAuthUser();
@@ -41,7 +42,7 @@ export default async function CampaignsPage({ searchParams }: { searchParams: { 
         </select>
         <Button type="submit">Apply</Button>
       </form>
-      <CampaignTable campaigns={campaigns} />
+      <CampaignTable campaigns={campaigns.map(normalizeCampaign)} />
     </main>
   );
 }

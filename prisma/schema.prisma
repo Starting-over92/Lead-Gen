@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
@@ -34,19 +34,19 @@ model Campaign {
   name                String
   niche               String
   country             String
-  cities              String[]
+  cities              Json
   companySizeMin      Int?
   companySizeMax      Int?
   companySizeLabel    String
-  jobTitles           String[]
+  jobTitles           Json
   outreachTone        OutreachTone
   dailyLimit          Int
   includeLinkedIn     Boolean        @default(true)
   includeGoogleMaps   Boolean        @default(true)
   verifiedEmailsOnly  Boolean        @default(false)
   excludeFreeEmails   Boolean        @default(true)
-  blacklistKeywords   String[]
-  includeKeywords     String[]
+  blacklistKeywords   Json
+  includeKeywords     Json
   status              CampaignStatus @default(DRAFT)
   totalLeadsScraped   Int            @default(0)
   totalEmailsSent     Int            @default(0)

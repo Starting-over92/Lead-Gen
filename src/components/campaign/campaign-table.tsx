@@ -1,9 +1,9 @@
 import Link from "next/link";
-import { Campaign } from "@prisma/client";
 import { CampaignStatusBadge } from "./campaign-status-badge";
 import { Button } from "@/components/ui/button";
+import { CampaignView } from "@/lib/campaign";
 
-export function CampaignTable({ campaigns }: { campaigns: Campaign[] }) {
+export function CampaignTable({ campaigns }: { campaigns: CampaignView[] }) {
   return (
     <div className="overflow-x-auto rounded-xl border bg-white">
       <table className="w-full text-left text-sm">
