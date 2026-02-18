@@ -18,7 +18,7 @@ export default async function CampaignsPage({ searchParams }: { searchParams: { 
   const campaigns = await prisma.campaign.findMany({
     where: {
       userId: user.id,
-      ...(q ? { OR: [{ name: { contains: q, mode: "insensitive" } }, { niche: { contains: q, mode: "insensitive" } }] } : {}),
+      ...(q ? { OR: [{ name: { contains: q } }, { niche: { contains: q } }] } : {}),
       ...(status !== "ALL" ? { status } : {}),
     },
     orderBy: { createdAt: sort },
