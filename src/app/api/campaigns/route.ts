@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { campaignFormSchema } from "@/types/campaign";
 import { getAuthUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { normalizeCampaign } from "@/lib/campaign";
+import { normalizeCampaign, serializeCampaignCreateData } from "@/lib/campaign";
 
 export async function POST(request: Request) {
   const user = await getAuthUser();
@@ -14,7 +14,9 @@ export async function POST(request: Request) {
 
   await prisma.user.upsert({ where: { id: user.id }, update: { email: user.email }, create: { id: user.id, email: user.email } });
 
-  const campaign = await prisma.campaign.create({ data: { ...parsed.data, userId: user.id, status: "DRAFT" } });
+  const campaign = await prisma.campaign.create({
+    data: { ...serializeCampaignCreateData(parsed.data), userId: user.id, status: "DRAFT" },
+  });
   return NextResponse.json({ id: campaign.id }, { status: 201 });
 }
 

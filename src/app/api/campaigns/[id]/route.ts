@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { campaignFormSchema } from "@/types/campaign";
 import { getAuthUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { normalizeCampaign } from "@/lib/campaign";
+import { normalizeCampaign, serializeCampaignUpdateData } from "@/lib/campaign";
 
 async function getOwnedCampaign(id: string, userId: string) {
   return prisma.campaign.findFirst({ where: { id, userId } });
@@ -26,7 +26,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
   const parsed = campaignFormSchema.partial().safeParse(await request.json());
   if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
 
-  const updated = await prisma.campaign.update({ where: { id: params.id }, data: parsed.data });
+  const updated = await prisma.campaign.update({ where: { id: params.id }, data: serializeCampaignUpdateData(parsed.data) });
   return NextResponse.json(normalizeCampaign(updated));
 }
 

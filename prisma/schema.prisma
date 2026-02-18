@@ -34,19 +34,19 @@ model Campaign {
   name                String
   niche               String
   country             String
-  cities              Json
+  cities              String         @db.LongText
   companySizeMin      Int?
   companySizeMax      Int?
   companySizeLabel    String
-  jobTitles           Json
+  jobTitles           String         @db.LongText
   outreachTone        OutreachTone
   dailyLimit          Int
   includeLinkedIn     Boolean        @default(true)
   includeGoogleMaps   Boolean        @default(true)
   verifiedEmailsOnly  Boolean        @default(false)
   excludeFreeEmails   Boolean        @default(true)
-  blacklistKeywords   Json
-  includeKeywords     Json
+  blacklistKeywords   String         @db.LongText
+  includeKeywords     String         @db.LongText
   status              CampaignStatus @default(DRAFT)
   totalLeadsScraped   Int            @default(0)
   totalEmailsSent     Int            @default(0)
