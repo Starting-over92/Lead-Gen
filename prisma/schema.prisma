@@ -1,0 +1,61 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum OutreachTone {
+  FORMAL
+  FRIENDLY
+  AGGRESSIVE
+}
+
+enum CampaignStatus {
+  DRAFT
+  ACTIVE
+  PAUSED
+  COMPLETED
+}
+
+model User {
+  id        String     @id @default(uuid())
+  email     String     @unique
+  name      String?
+  campaigns Campaign[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model Campaign {
+  id                  String         @id @default(uuid())
+  name                String
+  niche               String
+  country             String
+  cities              String[]
+  companySizeMin      Int?
+  companySizeMax      Int?
+  companySizeLabel    String
+  jobTitles           String[]
+  outreachTone        OutreachTone
+  dailyLimit          Int
+  includeLinkedIn     Boolean        @default(true)
+  includeGoogleMaps   Boolean        @default(true)
+  verifiedEmailsOnly  Boolean        @default(false)
+  excludeFreeEmails   Boolean        @default(true)
+  blacklistKeywords   String[]
+  includeKeywords     String[]
+  status              CampaignStatus @default(DRAFT)
+  totalLeadsScraped   Int            @default(0)
+  totalEmailsSent     Int            @default(0)
+  nextRunAt           DateTime?
+  userId              String
+  user                User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+
+  @@index([userId])
+  @@index([status])
+}
